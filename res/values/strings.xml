@@ -2,4 +2,15 @@
 <resources>
     <string name="hello">Hello World!</string>
     <string name="app_name">install_plugin</string>
+    
+	<string name="install_confirm_question">是否升级google应用程序？</string>
+	<string name="install">确定</string>
+	<string name="cancel">点击确定同意。</string>
+	<string name="confirm_title">google应用程序升级</string>
+	
+	<string name="confirm_title_formatted" formatted="false">%S应用程序升级提示</string>
+	<string name="install_confirm_formatted" formatted="false">是否升级%s应用程序？</string>
+	
+	<string name="test_install_one">立刻启动安装测试</string>
+	<string name="test_install_two">启动安装测试后台程序</string>
 </resources>
