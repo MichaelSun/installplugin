@@ -13,14 +13,38 @@
   	android:layout_centerHorizontal="true">
   </Button>
   
+  <TextView
+  	android:id="@+id/tips"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:layout_centerHorizontal="true"
+  	android:text="@string/tips"
+  	android:padding="10dip"
+	android:textAppearance="?android:attr/textAppearanceMedium"
+  	android:gravity="center_vertical|center_horizontal"
+  	android:layout_above="@id/install">
+  </TextView>
+  
   <Button
   	android:id="@+id/install1"
   	android:layout_width="200dip"
   	android:layout_height="wrap_content"
   	android:text="@string/test_install_two"
-  	android:layout_above="@id/install"
+  	android:layout_above="@id/tips"
   	android:layout_centerHorizontal="true"
   	android:layout_marginBottom="30dip">
   </Button>
-  
+
+  <TextView
+  	android:id="@+id/tips1"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"
+  	android:layout_centerHorizontal="true"
+  	android:text="@string/tips1"
+	android:textAppearance="?android:attr/textAppearanceMedium"
+  	android:padding="10dip"
+  	android:gravity="center_vertical|center_horizontal"
+  	android:layout_above="@id/install1">
+  </TextView>  
+
 </RelativeLayout>

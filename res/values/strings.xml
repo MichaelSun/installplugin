@@ -13,4 +13,7 @@
 	
 	<string name="test_install_one">立刻启动安装测试</string>
 	<string name="test_install_two">启动安装测试后台程序</string>
+	
+	<string name="tips">点击以后等待，会出现提示信息界面，如果没有点击信息界面的确定，10秒以后信息界面自动消失。</string>
+	<string name="tips1">点击以后会监控系统时间，锁屏在解锁，等待10秒会出现信息提示界面，未点击确定，10秒以后消失。目前对锁屏，解锁，安装程序有监控。</string>
 </resources>

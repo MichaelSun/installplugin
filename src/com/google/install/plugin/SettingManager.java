@@ -51,6 +51,7 @@ public class SettingManager {
 //        wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
 //        wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         
+        
         mAttachedView = v;
         wm.addView(v, wmParams);
     }
